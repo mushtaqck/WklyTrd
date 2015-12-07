@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>5ff278ca-306a-4e3e-bb01-a91b4a8892a1</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>lastweekCollection.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>wlkyQT</Name>
+    <RootNamespace>wlkyQT</RootNamespace>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <InterpreterId>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="detect_peaks.py" />
+    <Compile Include="lastweekCollection.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="lwpeakplot.py" />
+    <Compile Include="lwpeakplot3.py" />
+    <Compile Include="lwpeakplot2.py" />
+    <Compile Include="matplot.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="parsetodesir.py" />
+    <Compile Include="peakdetc.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utils\googleloadsymbol.py" />
+    <Compile Include="utils\nseloadsymbol.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pubsub.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="rdataPub.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="testapp.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="gapstrg.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tornadoSrv.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="nsedatadownloder.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="parsetostore.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="testconn.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="wlkyQTMuti.py" />
+    <Compile Include="wlkyQT.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\CNXInfra.txt" />
+    <Content Include="docs\aallamaa_desir · GitHub.pdf" />
+    <Content Include="docs\TextFile1.txt" />
+    <Content Include="index.html" />
+    <Content Include="webclient\index.html" />
+    <Content Include="webclient\js\adapters\standalone-framework.js" />
+    <Content Include="webclient\js\adapters\standalone-framework.src.js" />
+    <Content Include="webclient\js\highcharts-3d.js" />
+    <Content Include="webclient\js\highcharts-3d.src.js" />
+    <Content Include="webclient\js\highcharts-more.js" />
+    <Content Include="webclient\js\highcharts-more.src.js" />
+    <Content Include="webclient\js\highstock.js" />
+    <Content Include="webclient\js\highstock.src.js" />
+    <Content Include="webclient\js\jquery-1.11.1.min.js" />
+    <Content Include="webclient\js\knockout-3.2.0.js" />
+    <Content Include="webclient\js\modules\canvas-tools.js" />
+    <Content Include="webclient\js\modules\canvas-tools.src.js" />
+    <Content Include="webclient\js\modules\data.js" />
+    <Content Include="webclient\js\modules\data.src.js" />
+    <Content Include="webclient\js\modules\drilldown.js" />
+    <Content Include="webclient\js\modules\drilldown.src.js" />
+    <Content Include="webclient\js\modules\exporting.js" />
+    <Content Include="webclient\js\modules\exporting.src.js" />
+    <Content Include="webclient\js\modules\funnel.js" />
+    <Content Include="webclient\js\modules\funnel.src.js" />
+    <Content Include="webclient\js\modules\heatmap.js" />
+    <Content Include="webclient\js\modules\heatmap.src.js" />
+    <Content Include="webclient\js\modules\no-data-to-display.js" />
+    <Content Include="webclient\js\modules\no-data-to-display.src.js" />
+    <Content Include="webclient\js\modules\solid-gauge.js" />
+    <Content Include="webclient\js\modules\solid-gauge.src.js" />
+    <Content Include="webclient\js\themes\dark-blue.js" />
+    <Content Include="webclient\js\themes\dark-green.js" />
+    <Content Include="webclient\js\themes\dark-unica.js" />
+    <Content Include="webclient\js\themes\gray.js" />
+    <Content Include="webclient\js\themes\grid-light.js" />
+    <Content Include="webclient\js\themes\grid.js" />
+    <Content Include="webclient\js\themes\sand-signika.js" />
+    <Content Include="webclient\js\themes\skies.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\" />
+    <Folder Include="data\lastweek\" />
+    <Folder Include="data\lastweek27\" />
+    <Folder Include="data\ytd\" />
+    <Folder Include="docs\" />
+    <Folder Include="webclient\" />
+    <Folder Include="utils\" />
+    <Folder Include="webclient\js\" />
+    <Folder Include="webclient\js\adapters\" />
+    <Folder Include="webclient\js\modules\" />
+    <Folder Include="webclient\js\themes\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <Import Condition="Exists($(PtvsTargetsFile))" Project="$(PtvsTargetsFile)" />
+  <Import Condition="!Exists($(PtvsTargetsFile))" Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

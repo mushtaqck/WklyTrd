@@ -1,0 +1,345 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{{ title }}</title>
+</head>
+<style>
+    .aParent div {
+        float: left;
+        clear: none;
+        font-size: small;
+        padding: 0,0,0,0;
+        vertical-align: top;
+    }
+
+    #divsub ul li:nth-child(9n) {
+        color: red;
+    }
+</style>
+
+<body>
+    <!--<script type="text/javascript" src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>-->
+    <script type='text/javascript' src='{{ static_url("./js/sockjs.min.js") }}'></script>
+    <script type='text/javascript' src='{{ static_url("./js/knockout-3.2.0.js") }}'></script>
+    <script type='text/javascript' src='{{ static_url("./js/jquery-1.11.1.min.js")}}'></script>
+    <script type='text/javascript' src='{{ static_url("./js/numeral.min.js")}}'></script>
+    <script type='text/javascript' src='{{ static_url("./js/modalBox-min.js")}}'></script>
+    <script>
+        var sockJS;
+
+        function displayMessage(message) {
+            console.log(message)
+            //var el = document.createElement('div');
+            //el.innerHTML = message;
+            //document.body.appendChild(el);
+        }
+        $(document).ready(function () {
+
+            sockJS = new SockJS("/sockjs")
+
+            sockJS.onopen = function () {
+                displayMessage('Connected.');
+            };
+            sockJS.onmessage = function (event) {
+                data = JSON.parse(event.data);
+
+                switch (data.type) {
+                    case 'afp':
+                        vm.update_vechiles(data.data);
+                        break;
+                    case 'qt':
+                        vm.update_feed(data.data);
+                        break;
+                    case 'ctime':
+                        vm.currenttime(data.data);
+                        break;
+                    case 'plt':
+                        vm.update_plotstatus(data.data);
+                        break;
+                    default:
+                }
+            };
+            sockJS.onclose = function () {
+                displayMessage("Closed.");
+            };
+        })
+    </script>
+
+    <div class="aParent">
+        <div style="border:thin;width:200px;height:600px;overflow:auto">
+            <input type="button" data-bind="click:send_msg" /><span data-bind="text:currenttime"></span>
+            <ul data-bind="foreach: vehicles" style="list-style-type: none; padding: 0px; margin-left: 0px; margin-right:5px;">
+                <li><span data-bind="text:symbol,click:$parent.subscribe"></span>:<span data-bind="text:lstprice"> </span>  <span data-bind="text:subscription() ? 'U':'S'">S</span> </li>
+            </ul>
+        </div>
+
+        <div id="container" style="height: 600px; width: 1100px;overflow:auto">
+            <table id="tblheatmap" data-bind="with: $root.subscribedItems" style=" border-collapse: collapse;">
+                <tr data-bind="foreach:$root.subscribedItems">
+                    <td style="text-align:center; padding:0; margin:0;">
+                        <div style="border:thin;" id="divsub">
+                            <span data-bind="text:symbol,click:$root.subscribe"></span><!--|<span data-bind="click:$root.getplot,visible:(plotstatus() != 'requested')">P</span>| <a data-bind="visible:(plotstatus() == 'generated'),attr:{'href': '/static/./img/' + symbol() + '.png'}">V</a>--> <br />
+                            <span data-bind="text:lstprice"></span>
+                            <ul data-bind="foreach:$data.range" style="list-style-type: none; padding: 0px; margin-left: 0px; margin-right:15px;">
+                                <li>
+                                    <div>
+                                        <div data-bind="style: {'backgroundColor': $data.bhh},attr:{'title':$data.hh}">&nbsp;&nbsp;</div>
+                                        <div data-bind="style: {'backgroundColor': $data.b, 'text-align': 'center'}"> <span data-bind="numeraltext:s"></span>-<span data-bind="numeraltext:e"></span>(<span data-bind="text:h"></span>)</div>
+                                        <div style="background-color:green" data-bind="visible:$data.inlast()">&nbsp;&nbsp;</div>
+                                        <!--<img src='{{ static_url("./img/bullet.gif") }}' />-->
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript" language="javascript">
+
+    // Define the ending colour, which is white
+    xr = 255; // Red value
+    xg = 255; // Green value
+    xb = 255; // Blue value
+    // Define the starting colour #f32075
+    yr = 90; // Red value
+    yg = 24; // Green value
+    yb = 110; // Blue value
+
+    // Function to get the Max value in Array
+    Array.max = function (array) {
+        return Math.max.apply(Math, array);
+    };
+
+    var formatNumber = function (element, valueAccessor, allBindingsAccessor, format) {
+        // Provide a custom text value
+        var value = valueAccessor(), allBindings = allBindingsAccessor();
+        var numeralFormat = allBindingsAccessor.numeralFormat || format;
+        var strNumber = ko.utils.unwrapObservable(value);
+        if (strNumber) {
+            return numeral(strNumber).format(numeralFormat);
+        }
+        return '';
+    };
+
+    ko.bindingHandlers.numeraltext = {
+        init: function (element, valueAccessor, allBindingsAccessor) {
+            $(element).text(formatNumber(element, valueAccessor, allBindingsAccessor, "(0,0.00)"));
+        },
+        update: function (element, valueAccessor, allBindingsAccessor) {
+            $(element).text(formatNumber(element, valueAccessor, allBindingsAccessor, "(0,0.00)"));
+        }
+    };
+
+    var range = function (s, e, h, hh) {
+        var self = this;
+        self.s = ko.observable(s);
+        self.e = ko.observable(e);
+        self.h = ko.observable(h);
+        self.b = ko.computed(function () {
+            if (self.h()) {
+
+
+                var val = parseInt(self.h());
+                var pos = parseInt((Math.round((val / 60) * 100)).toFixed(0));
+                var n = 34;
+                red = parseInt(xr + ((pos * (yr - xr))) / (n - 1)).toFixed(0);
+                green = parseInt(xg + ((pos * (yg - xg))) / (n - 1)).toFixed(0);
+                blue = parseInt(xb + ((pos * (yb - xb))) / (n - 1)).toFixed(0);
+                clr = 'rgb(' + red + ',' + green + ',' + blue + ')';
+                return clr;
+            }
+        }.bind(this));
+
+        self.hh = ko.observable(hh);
+        self.bhh = ko.observable('');
+        self.inlast = ko.observable(false);
+    }
+
+
+    var vehicle = function (symbol, rtn, td, lstprice, miny, maxy) {
+        var self = this
+        self.symbol = ko.observable(symbol)
+        self.rtn = ko.observable(rtn)
+        self.td = ko.observable(td)
+        self.lstprice = ko.observable(lstprice)
+        self.miny = ko.observable(miny)
+        self.maxy = ko.observable(maxy)
+        self.subscription = ko.observable(false)
+        self.range = ko.observableArray([])
+        self.plotstatus = ko.observable('')
+    }
+
+
+    var VehicleModel = function () {
+        var self = this;
+
+        self.maxHMRows = ko.observable(34);
+        self.vehicles = ko.observableArray([]);
+
+        self.currenttime = ko.observable('');
+
+        self.subscribedItems = ko.computed(function () {
+            var allTrue = ko.utils.arrayFilter(self.vehicles(), function (item) {
+                return item.subscription();
+            })
+
+            return allTrue;
+        }.bind(this));
+
+
+        self.update_vechiles = function (vh) {
+            //self.vehicles([]);
+            ko.utils.arrayForEach(vh, function (v) {
+                //self.vehicles.push({ 'symbol': v.n, 'rtn': v.rtn, 'td': v.td, 'lstprice': 0.0 });
+                var match = ko.utils.arrayFirst(self.vehicles(), function (item) {
+                    return v.n === item.symbol();
+                });
+
+                var oldmin = 0
+                var oldmax = 0
+
+                //var histMax = Array.max(v.his.map(function (i) { return i[1]; }))
+
+                if (match) {
+                    match.rtn(v.rtn)
+                    match.td(v.td)
+                    oldmin = match.miny()
+                    oldmax = match.maxy()
+                }
+                else {
+                    var pushIndex = self.vehicles.push(new vehicle(v.n, v.rtn, v.td, 0.0, v.y[0], v.y[1]));
+                    match = self.vehicles()[pushIndex - 1]
+                }
+
+                match.maxy((v.y[0] > v.y[1] ? v.y[0] : v.y[1]))
+                match.miny((v.y[0] > v.y[1] ? v.y[1] : v.y[0]))
+
+                if (oldmax != match.maxy() || oldmin != match.miny()) {
+
+                    var difrns = (match.maxy() - match.miny()) / self.maxHMRows();
+                    var newRange = [];
+                    var nextMin = match.miny();
+                    for (var i = 0; i < self.maxHMRows() ; i++) {
+                        newRange.push(new range(nextMin, nextMin + difrns, 0, 0))
+                        nextMin = nextMin + difrns;
+                    }
+
+
+                    ko.utils.arrayForEach(newRange, function (r) {
+                        ko.utils.arrayForEach(v.his, function (h) {
+                            if (h[0] > r.s() && h[0] < r.e()) {
+                                r.hh(r.hh() + 1);
+                            }
+                        });
+
+                        ko.utils.arrayForEach(v.cur, function (c) {
+                            if (c[0] > r.s() && c[0] < r.e()) {
+                                r.h(r.h() + 1);
+                            }
+                        });
+                    });
+
+
+                    var maxhh = Array.max(newRange.map(function (i) { return i.hh() }));
+                    var n = 34;
+                    // Define the starting colour #f32075
+                    hhyr = 243; // Red value
+                    hhyg = 32; // Green value
+                    hhyb = 117; // Blue value
+                    ko.utils.arrayForEach(newRange, function (r) {
+                        var val = parseInt(r.hh());
+                        var pos = parseInt((Math.round((val / maxhh) * 100)).toFixed(0));
+                        red = parseInt(xr + ((pos * (hhyr - xr))) / (n - 1)).toFixed(0);
+                        green = parseInt(xg + ((pos * (hhyg - xg))) / (n - 1)).toFixed(0);
+                        blue = parseInt(xb + ((pos * (hhyb - xb))) / (n - 1)).toFixed(0);
+                        clr = 'rgb(' + red + ',' + green + ',' + blue + ')';
+                        r.bhh(clr);
+                        r.inlast(false);
+                    });
+
+
+                    match.range([]);
+                    match.range(newRange.reverse());
+
+
+                }
+            })
+
+            sorted = self.vehicles().sort(compare)
+
+            sockJS.send('test');
+        }
+
+        self.update_feed = function (f) {
+            var match = ko.utils.arrayFirst(self.subscribedItems(), function (item) {
+                return f.n === item.symbol();
+            });
+
+
+
+            if (match) {
+                match.lstprice(f.price);
+
+                ko.utils.arrayForEach(match.range(), function (r) {
+                    r.inlast(false);
+                });
+
+                var rangematch = ko.utils.arrayFirst(match.range(), function (r) {
+                    return f.price > r.s() && f.price < r.e();
+                });
+
+                if (rangematch) {
+                    rangematch.h(rangematch.h() + 1);
+                    rangematch.inlast(true);
+                }
+
+            }
+        }
+
+        self.subscribe = function (i) {
+            i.subscription(!i.subscription())
+            sockJS.send(i.symbol() + " |q|" + i.subscription())
+        }
+
+        self.getplot = function (i) {
+            i.plotstatus('requested')
+            sockJS.send(i.symbol() + " |p|0")
+        }
+
+        self.update_plotstatus = function (s) {
+
+            ko.utils.arrayForEach(s, function (v) {
+                //self.vehicles.push({ 'symbol': v.n, 'rtn': v.rtn, 'td': v.td, 'lstprice': 0.0 });
+                var match = ko.utils.arrayFirst(self.vehicles(), function (item) {
+                    return v === item.symbol();
+                });
+
+                if (match) {
+                    match.plotstatus('generated');
+                }
+            });
+        }
+
+        self.send_msg = function () {
+            sockJS.send('111111111111');
+        }
+    }
+
+    var vm = new VehicleModel()
+    ko.applyBindings(vm);
+
+    function compare(a, b) {
+        if (a.rtn < b.rtn)
+            return -1;
+        if (a.rtn > b.rtn)
+            return 1;
+        return 0;
+    }
+
+</script>

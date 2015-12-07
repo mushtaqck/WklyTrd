@@ -1,0 +1,74 @@
+﻿
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <script type='text/javascript' src='{{ static_url("./js/knockout-3.2.0.js") }}'></script>
+    <script type='text/javascript' src='{{ static_url("./js/jquery-1.11.1.min.js")}}'></script>
+    <script type='text/javascript' src='{{ static_url("./js/highstock.js")}}'></script>
+    <title></title>
+    <style>
+        .aParent div {
+            float: left;
+            clear: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="aParent">
+        <div style="border:thin;width:250px;height:600px;overflow:auto">
+            <ul data-bind="foreach: symbols" style="list-style-type:none">
+                <li data-bind="text:symbol,attr:{title:name},click:$parent.getQuotes"></li>
+            </ul>
+        </div>
+        <div style="border:thin">
+            <div id="container" style="height: 600px; min-width: 810px"></div>
+        </div>
+    </div>
+</body>
+
+
+</html>
+<script type="text/javascript" language="javascript">
+
+    var SymbolModel = function (symbols) {
+        var self = this;
+        self.symbols = ko.observableArray(ko.utils.arrayMap(symbols, function (symbol) {
+            return { "symbol": symbol.symbol, "name": symbol.name };
+        }));
+
+        self.getQuotes = function (symbol) {
+            $.getJSON('/quotes?q=' + symbol.symbol + '&s=20140101&e=20141231&t=d', function (data) {
+                //console.log(data);
+                $('#container').empty()
+
+                // Create the chart
+                $('#container').highcharts('StockChart', {
+                    rangeSelector: {
+                        selected: 1
+                    },
+                    title: {
+                        text: symbol.name + ' Price'
+                    },
+                    series: [{
+                        name: symbol.symbol,
+                        data: data,
+                        tooltip: {
+                            valueDecimals: 2
+                        }
+                    }],
+                    xAxis: {
+                        minRange: 3600 * 1000 // one hour
+                    }
+                });
+            });
+        };
+
+    }
+
+
+    $.getJSON('/symbollst', function (data) {
+        ko.applyBindings(new SymbolModel(data));
+    })
+
+</script>

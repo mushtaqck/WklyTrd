@@ -1,0 +1,51 @@
+1. Feeder Module
+	a. able to get data from source defined depending on frequency and  vechicle list
+	able to get data from redis store for back testing 
+
+
+
+	gave min and max y give me a heatmap based on hits
+
+
+
+	relay each 1 min
+
+	dataframe - 15 mins
+
+	1min = 5 sec = 15 * 5 = 75
+
+
+	:https://streamerapi.finance.yahoo.com/streamer/1.0?s=INFY.NS,USD=X&o=^BSESN,^NSEI,^BSESN,^NSEI,SBI.BO,RELIANCE.BO,TATAMOTORS.BO,INFY.NS,BHARTIAIRTEL.NS,INFY.NS&k=a00,b00,c63,g53,h53,l84,p20,p43,t53,v53&j=c63,l84,p20,p43,t53&r=0&callback=parent.yfs_u1f&mktmcb=parent.yfs_mktmcb&gencallback=parent.yfs_gencb&region=IN&lang=en-IN&localize=0&mu=1&ts=1421035266220&dp=1
+
+
+	14 TODO
+
+	1.	is schiff ----------
+	2.	show chart 
+	3.	heartbeat - quotes, update_afp
+	4.  live timeframe check
+	5.  compress ticks
+
+
+
+
+
+	ORDER TASK:
+
+	class Order: # interface
+
+	# order
+	#	create order
+	#	get status
+
+
+	class PaperOrder
+
+
+
+
+
+
+
+
+
